@@ -1,0 +1,110 @@
+"use client";
+
+import * as React from "react";
+import {
+  Moon,
+  Sun,
+  LayoutDashboard,
+  CreditCard,
+  PieChart,
+  Menu,
+} from "lucide-react";
+import { useTheme } from "next-themes";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useFinanceStore } from "@/store/useFinanceStore";
+
+function ModeToggle() {
+  const { setTheme } = useTheme();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
+        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <span className="sr-only">Toggle theme</span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => setTheme("light")}>
+          Light
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>
+          Dark
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("system")}>
+          System
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function RoleSwitcher() {
+  const { role, setRole } = useFinanceStore();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md bg-secondary px-3 py-2 text-sm ring-offset-background transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
+        Role: {role}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => setRole("Admin")}>
+          Admin
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setRole("Viewer")}>
+          Viewer
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex min-h-screen w-full flex-col md:flex-row">
+      {/* Sidebar */}
+      <aside className="hidden md:flex w-64 flex-col border-r bg-muted/40 p-4">
+        <div className="flex items-center gap-2 mb-8 px-2 font-bold text-xl">
+          <LayoutDashboard className="h-6 w-6" />
+          <span>Finance UI</span>
+        </div>
+        <nav className="flex flex-col gap-2">
+          <button className="inline-flex items-center justify-start w-full rounded-md px-3 py-2 text-sm hover:bg-accent transition-colors">
+            <LayoutDashboard className="mr-2 h-4 w-4" />
+            Overview
+          </button>
+          <button className="inline-flex items-center justify-start w-full rounded-md px-3 py-2 text-sm hover:bg-accent transition-colors">
+            <CreditCard className="mr-2 h-4 w-4" />
+            Transactions
+          </button>
+          <button className="inline-flex items-center justify-start w-full rounded-md px-3 py-2 text-sm hover:bg-accent transition-colors">
+            <PieChart className="mr-2 h-4 w-4" />
+            Insights
+          </button>
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="flex h-16 items-center border-b px-4 lg:px-6 justify-between md:justify-end gap-4">
+          <div className="md:hidden flex items-center gap-2 font-bold">
+            <Menu className="h-6 w-6" />
+            <span>Finance UI</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <RoleSwitcher />
+            <ModeToggle />
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <div className="flex-1 p-4 lg:p-8 overflow-y-auto">{children}</div>
+      </main>
+    </div>
+  );
+}
