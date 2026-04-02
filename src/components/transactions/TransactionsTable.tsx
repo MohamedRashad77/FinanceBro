@@ -22,7 +22,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 type SortField = keyof Transaction;
 
-export function TransactionsTable() {
+export function TransactionsTable({ limit, hideControls }: { limit?: number; hideControls?: boolean }) {
   const transactions = useFinanceStore((state) => state.transactions);
   const role = useFinanceStore((state) => state.role);
   const [filter, setFilter] = useState("");

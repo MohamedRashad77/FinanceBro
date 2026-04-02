@@ -18,6 +18,38 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useFinanceStore, CurrencyCode } from "@/store/useFinanceStore";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+function SideNavigation() {
+  const pathname = usePathname();
+  
+  const navItems = [
+    { name: "Overview", href: "/", icon: LayoutDashboard },
+    { name: "Transactions", href: "/transactions", icon: CreditCard },
+    { name: "Insights", href: "/insights", icon: PieChart },
+  ];
+
+  return (
+    <nav className="flex flex-col gap-2">
+      {navItems.map((item) => {
+        const isActive = pathname === item.href;
+        return (
+          <Link
+            key={item.name}
+            href={item.href}
+            className={`inline-flex items-center justify-start w-full rounded-md px-3 py-2 text-sm transition-colors ${
+              isActive ? "bg-accent text-accent-foreground font-medium" : "hover:bg-accent hover:text-accent-foreground text-muted-foreground"
+            }`}
+          >
+            <item.icon className="mr-2 h-4 w-4" />
+            {item.name}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
 
 function ModeToggle() {
   const { setTheme } = useTheme();
@@ -66,10 +98,10 @@ function RoleSwitcher() {
 
 const currencies: { code: CurrencyCode; label: string }[] = [
   { code: "USD", label: "US Dollar ($)" },
-  { code: "EUR", label: "Euro (€)" },
-  { code: "GBP", label: "British Pound (£)" },
-  { code: "INR", label: "Indian Rupee (₹)" },
-  { code: "JPY", label: "Japanese Yen (¥)" },
+  { code: "EUR", label: "Euro (â‚¬)" },
+  { code: "GBP", label: "British Pound (Â£)" },
+  { code: "INR", label: "Indian Rupee (â‚¹)" },
+  { code: "JPY", label: "Japanese Yen (Â¥)" },
 ];
 
 function CurrencySwitcher() {
@@ -104,20 +136,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <LayoutDashboard className="h-6 w-6" />
           <span>Finance UI</span>
         </div>
-        <nav className="flex flex-col gap-2">
-          <button className="inline-flex items-center justify-start w-full rounded-md px-3 py-2 text-sm hover:bg-accent transition-colors">
-            <LayoutDashboard className="mr-2 h-4 w-4" />
-            Overview
-          </button>
-          <button className="inline-flex items-center justify-start w-full rounded-md px-3 py-2 text-sm hover:bg-accent transition-colors">
-            <CreditCard className="mr-2 h-4 w-4" />
-            Transactions
-          </button>
-          <button className="inline-flex items-center justify-start w-full rounded-md px-3 py-2 text-sm hover:bg-accent transition-colors">
-            <PieChart className="mr-2 h-4 w-4" />
-            Insights
-          </button>
-        </nav>
+        <SideNavigation />
       </aside>
 
       <main className="flex-1 flex flex-col">

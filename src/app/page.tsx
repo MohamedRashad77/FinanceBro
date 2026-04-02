@@ -74,8 +74,13 @@ export default function Home() {
               </div>
 
               <div>
-                <h2 className="text-xl font-bold tracking-tight mb-4">Transactions</h2>
-                <TransactionsTable />
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold tracking-tight">Recent Transactions</h2>
+                  <a href="/transactions" className="text-sm font-medium text-primary hover:underline">
+                    View All
+                  </a>
+                </div>
+                <TransactionsTable limit={5} hideControls />
               </div>
             </motion.div>
           )}
