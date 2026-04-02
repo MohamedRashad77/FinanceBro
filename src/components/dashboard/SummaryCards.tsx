@@ -2,11 +2,20 @@
 
 import { useFinanceStore } from "@/store/useFinanceStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Coins } from "lucide-react";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
+import { useFilteredTransactions } from "@/hooks/useFilteredTransactions";
 import { useMemo } from "react";
+import { motion } from "framer-motion";
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1 },
+};
 
 export function SummaryCards() {
-  const transactions = useFinanceStore((state) => state.transactions);
+  const transactions = useFilteredTransactions();
+  const { format } = useCurrencyFormatter();
 
   const { income, expense, balance } = useMemo(() => {
     return transactions.reduce(
@@ -23,44 +32,53 @@ export function SummaryCards() {
     );
   }, [transactions]);
 
-  const formatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  });
-
   return (
-    <div className="grid gap-4 md:grid-cols-3">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{formatter.format(balance)}</div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Income</CardTitle>
-          <ArrowUpRight className="h-4 w-4 text-green-500" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-green-500">
-            {formatter.format(income)}
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
-          <ArrowDownRight className="h-4 w-4 text-red-500" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-red-500">
-            {formatter.format(expense)}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <motion.div
+      className="grid gap-4 md:grid-cols-3"
+      variants={{
+        visible: { transition: { staggerChildren: 0.1 } },
+        hidden: {},
+      }}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.div variants={itemVariants}>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
+            <Coins className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{format(balance)}</div>
+          </CardContent>
+        </Card>
+      </motion.div>
+      <motion.div variants={itemVariants}>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Income</CardTitle>
+            <ArrowUpRight className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-500">
+              {format(income)}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+      <motion.div variants={itemVariants}>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
+            <ArrowDownRight className="h-4 w-4 text-red-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-500">
+              {format(expense)}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
   );
 }

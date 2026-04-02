@@ -8,6 +8,7 @@ import {
   CreditCard,
   PieChart,
   Menu,
+  Globe
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
@@ -16,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useFinanceStore } from "@/store/useFinanceStore";
+import { useFinanceStore, CurrencyCode } from "@/store/useFinanceStore";
 
 function ModeToggle() {
   const { setTheme } = useTheme();
@@ -63,10 +64,41 @@ function RoleSwitcher() {
   );
 }
 
+const currencies: { code: CurrencyCode; label: string }[] = [
+  { code: "USD", label: "US Dollar ($)" },
+  { code: "EUR", label: "Euro (€)" },
+  { code: "GBP", label: "British Pound (£)" },
+  { code: "INR", label: "Indian Rupee (₹)" },
+  { code: "JPY", label: "Japanese Yen (¥)" },
+];
+
+function CurrencySwitcher() {
+  const { currency, setCurrency } = useFinanceStore();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
+        <Globe className="h-[1.2rem] w-[1.2rem] mr-2" />
+        {currency}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {currencies.map((c) => (
+          <DropdownMenuItem
+            key={c.code}
+            onClick={() => setCurrency(c.code)}
+            className={currency === c.code ? "bg-accent" : ""}
+          >
+            {c.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen w-full flex-col md:flex-row">
-      {/* Sidebar */}
       <aside className="hidden md:flex w-64 flex-col border-r bg-muted/40 p-4">
         <div className="flex items-center gap-2 mb-8 px-2 font-bold text-xl">
           <LayoutDashboard className="h-6 w-6" />
@@ -88,21 +120,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         </nav>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 flex flex-col">
-        {/* Header */}
         <header className="flex h-16 items-center border-b px-4 lg:px-6 justify-between md:justify-end gap-4">
           <div className="md:hidden flex items-center gap-2 font-bold">
             <Menu className="h-6 w-6" />
             <span>Finance UI</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+            <CurrencySwitcher />
             <RoleSwitcher />
             <ModeToggle />
           </div>
         </header>
 
-        {/* Page Content */}
         <div className="flex-1 p-4 lg:p-8 overflow-y-auto">{children}</div>
       </main>
     </div>

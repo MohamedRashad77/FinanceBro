@@ -4,6 +4,8 @@ import { useMemo } from "react";
 import { format } from "date-fns";
 import { useFinanceStore } from "@/store/useFinanceStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
+import { useFilteredTransactions } from "@/hooks/useFilteredTransactions";
 import {
   Area,
   AreaChart,
@@ -14,12 +16,15 @@ import {
   Tooltip,
   Cell,
   CartesianGrid,
+  ResponsiveContainer
 } from "recharts";
+import { motion } from "framer-motion";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#a855f7"];
 
 export function Visualizations() {
-  const transactions = useFinanceStore((state) => state.transactions);
+  const transactions = useFilteredTransactions();
+  const { format: formatCurrency, rawFormat } = useCurrencyFormatter();
 
   const trendData = useMemo(() => {
     const sorted = [...transactions].sort(
@@ -33,10 +38,10 @@ export function Visualizations() {
 
       return {
         date: format(new Date(t.date), "MMM dd"),
-        balance: runningBalance,
+        balance: rawFormat(runningBalance),
       };
     });
-  }, [transactions]);
+  }, [transactions, rawFormat]);
 
   const breakdownData = useMemo(() => {
     const expenses = transactions.filter((t) => t.type === "expense");
@@ -49,75 +54,92 @@ export function Visualizations() {
     );
 
     return Object.entries(grouped)
-      .map(([name, value]) => ({ name, value }))
+      .map(([name, value]) => ({ name, value: rawFormat(value) }))
       .sort((a, b) => b.value - a.value);
-  }, [transactions]);
+  }, [transactions, rawFormat]);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <Card>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="grid gap-4 xl:grid-cols-2 h-full"
+    >
+      <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle>Balance Trend</CardTitle>
+          <CardTitle className="text-base font-medium">Balance Trend</CardTitle>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
+        <CardContent className="flex-1 min-h-[300px] w-full">
           {trendData.length > 0 ? (
-            <AreaChart
-              width={450}
-              height={300}
-              data={trendData}
-              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip formatter={(value) => `$${value}`} />
-              <Area
-                type="monotone"
-                dataKey="balance"
-                stroke="#8884d8"
-                fill="#8884d8"
-                fillOpacity={0.2}
-              />
-            </AreaChart>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={trendData}
+                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="date" tick={{fontSize: 12}} />
+                <YAxis
+                  tickFormatter={(val) =>
+                    formatCurrency(val).replace(/\.00$/, "")
+                  }
+                  tick={{fontSize: 12}}
+                />
+                <Tooltip
+                  formatter={(value: any) => formatCurrency(Number(value))}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="balance"
+                  stroke="#8884d8"
+                  fill="#8884d8"
+                  fillOpacity={0.2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+            <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
               No data available
             </div>
           )}
         </CardContent>
       </Card>
-      <Card>
+      
+      <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle>Spending Breakdown</CardTitle>
+          <CardTitle className="text-base font-medium">Spending Breakdown</CardTitle>
         </CardHeader>
-        <CardContent className="flex justify-center">
+        <CardContent className="flex-1 min-h-[300px] flex items-center justify-center">
           {breakdownData.length > 0 ? (
-            <PieChart width={450} height={300}>
-              <Pie
-                data={breakdownData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-                paddingAngle={5}
-                dataKey="value"
-              >
-                {breakdownData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value) => `$${value}`} />
-            </PieChart>
+             <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={breakdownData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {breakdownData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value: any) => formatCurrency(Number(value))}
+                />
+              </PieChart>
+             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[300px] w-full text-muted-foreground">
+            <div className="flex items-center justify-center h-full w-full text-muted-foreground text-sm">
               No expenses to break down
             </div>
           )}
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }

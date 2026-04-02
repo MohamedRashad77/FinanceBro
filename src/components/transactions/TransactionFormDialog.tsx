@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,18 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useFinanceStore, Transaction } from "@/store/useFinanceStore";
+import { useFinanceStore, Transaction, EXCHANGE_RATES } from "@/store/useFinanceStore";
 
 interface TransactionFormDialogProps {
   transaction?: Transaction;
   triggerLabel?: string;
-  variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link";
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
   size?: "default" | "sm" | "lg" | "icon";
 }
 
@@ -41,13 +35,19 @@ export function TransactionFormDialog({
   size = "default",
 }: TransactionFormDialogProps) {
   const [open, setOpen] = useState(false);
+  const currency = useFinanceStore((state) => state.currency);
   const addTransaction = useFinanceStore((state) => state.addTransaction);
   const editTransaction = useFinanceStore((state) => state.editTransaction);
   const deleteTransaction = useFinanceStore((state) => state.deleteTransaction);
 
   const isEdit = !!transaction;
 
-  const [amount, setAmount] = useState(transaction?.amount.toString() || "");
+  // Convert USD to local currency for editing
+  const initialLocalAmount = transaction 
+    ? (transaction.amount * (EXCHANGE_RATES[currency] || 1)).toFixed(2)
+    : "";
+
+  const [amount, setAmount] = useState(initialLocalAmount);
   const [category, setCategory] = useState(transaction?.category || "");
   const [type, setType] = useState<"income" | "expense">(
     transaction?.type || "expense",
@@ -56,20 +56,33 @@ export function TransactionFormDialog({
     transaction?.date.split("T")[0] || new Date().toISOString().split("T")[0],
   );
 
+  // Update initial amount if dialog opens and currency changed while closed
+  useEffect(() => {
+    if (open && transaction) {
+      setAmount((transaction.amount * (EXCHANGE_RATES[currency] || 1)).toFixed(2));
+    } else if (!open && !isEdit) {
+      setAmount("");
+    }
+  }, [open, currency, transaction, isEdit]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!amount || !category || !date) return;
 
+    // Convert local currency back to USD for storage
+    const rate = EXCHANGE_RATES[currency] || 1;
+    const amountInUSD = Number(amount) / rate;
+
     if (isEdit) {
       editTransaction(transaction.id, {
-        amount: Number(amount),
+        amount: amountInUSD,
         category,
         type,
         date: new Date(date).toISOString(),
       });
     } else {
       addTransaction({
-        amount: Number(amount),
+        amount: amountInUSD,
         category,
         type,
         date: new Date(date).toISOString(),
@@ -90,12 +103,14 @@ export function TransactionFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant={variant} size={size}>
-          {!isEdit && <Plus className="mr-2 h-4 w-4" />}
-          {triggerLabel}
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger
+        render={
+          <Button variant={variant} size={size}>
+            {!isEdit && <Plus className="mr-2 h-4 w-4" />}
+            {triggerLabel}
+          </Button>
+        }
+      />
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
@@ -118,11 +133,12 @@ export function TransactionFormDialog({
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="amount" className="text-right">
-              Amount
+              Amount ({currency})
             </Label>
             <Input
               id="amount"
               type="number"
+              step="any"
               placeholder="0.00"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
@@ -149,7 +165,9 @@ export function TransactionFormDialog({
             </Label>
             <Select
               value={type}
-              onValueChange={(v: "income" | "expense") => setType(v)}
+              onValueChange={(v) => {
+                if (v) setType(v as "income" | "expense");
+              }}
             >
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select type" />
