@@ -42,21 +42,23 @@ export function SummaryCards() {
       initial="hidden"
       animate="visible"
     >
-      <motion.div variants={itemVariants}>
-        <Card>
+      <motion.div variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+        <Card className="transition-all duration-300 hover:shadow-lg hover:border-primary/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
-            <Coins className="h-4 w-4 text-muted-foreground" />
+            <Coins className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{format(balance)}</div>
+            <div className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-500">
+              {format(balance)}
+            </div>
           </CardContent>
         </Card>
       </motion.div>
-      <motion.div variants={itemVariants}>
-        <Card>
+      <motion.div variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+        <Card className="transition-all duration-300 hover:shadow-lg hover:border-green-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Income</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Income</CardTitle>
             <ArrowUpRight className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
@@ -66,10 +68,10 @@ export function SummaryCards() {
           </CardContent>
         </Card>
       </motion.div>
-      <motion.div variants={itemVariants}>
-        <Card>
+      <motion.div variants={itemVariants} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+        <Card className="transition-all duration-300 hover:shadow-lg hover:border-red-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Expenses</CardTitle>
             <ArrowDownRight className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>

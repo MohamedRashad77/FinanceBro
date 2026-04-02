@@ -15,9 +15,10 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Download } from "lucide-react";
+import { ArrowUpDown, Download, ReceiptText } from "lucide-react";
 import { TransactionFormDialog } from "@/components/transactions/TransactionFormDialog";
 import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
+import { motion, AnimatePresence } from "framer-motion";
 
 type SortField = keyof Transaction;
 
@@ -125,46 +126,68 @@ export function TransactionsTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedAndFiltered.length ? (
-                sortedAndFiltered.map((transaction) => (
-                  <TableRow key={transaction.id}>
-                    <TableCell className="font-medium p-4">
-                      {format(new Date(transaction.date), "PPP")}
-                    </TableCell>
-                    <TableCell className="p-4">{transaction.category}</TableCell>
-                    <TableCell className="p-4">
-                      <Badge
-                        variant={
-                          transaction.type === "income"
-                            ? "default"
-                            : "destructive"
-                        }
-                      >
-                        {transaction.type}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right p-4">
-                      {formatCurrency(transaction.amount)}
-                    </TableCell>
-                    {role === "Admin" && (
-                      <TableCell className="text-right p-4">
-                        <TransactionFormDialog
-                          transaction={transaction}
-                          triggerLabel="Edit"
-                          variant="outline"
-                          size="sm"
-                        />
+              <AnimatePresence initial={false}>
+                {sortedAndFiltered.length ? (
+                  sortedAndFiltered.map((transaction) => (
+                    <motion.tr
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                      key={transaction.id}
+                      className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
+                    >
+                      <TableCell className="font-medium p-4">
+                        {format(new Date(transaction.date), "PPP")}
                       </TableCell>
-                    )}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
+                      <TableCell className="p-4 text-muted-foreground">{transaction.category}</TableCell>
+                      <TableCell className="p-4">
+                        <Badge
+                          variant={
+                            transaction.type === "income"
+                              ? "default"
+                              : "destructive"
+                          }
+                          className={transaction.type === "income" ? "bg-green-500/10 text-green-500 hover:bg-green-500/20" : "bg-red-500/10 text-red-500 hover:bg-red-500/20"}
+                        >
+                          {transaction.type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right p-4 font-bold">
+                        {formatCurrency(transaction.amount)}
+                      </TableCell>
+                      {role === "Admin" && (
+                        <TableCell className="text-right p-4">
+                          <TransactionFormDialog
+                            transaction={transaction}
+                            triggerLabel="Edit"
+                            variant="ghost"
+                            size="sm"
+                          />
+                        </TableCell>
+                      )}
+                    </motion.tr>
+                  ))
+                ) : (
+                  <motion.tr
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <TableCell colSpan={5} className="h-[300px] text-center">
+                      <div className="flex flex-col items-center justify-center space-y-3 text-muted-foreground">
+                        <div className="p-4 rounded-full bg-muted/50">
+                          <ReceiptText className="h-8 w-8 text-muted-foreground/50" />
+                        </div>
+                        <p className="text-sm font-medium">No transactions found</p>
+                        <p className="text-xs max-w-[200px] mx-auto">
+                          Adjust your date range or filters to see more results.
+                        </p>
+                      </div>
+                    </TableCell>
+                  </motion.tr>
+                )}
+              </AnimatePresence>
             </TableBody>
           </Table>
         </div>

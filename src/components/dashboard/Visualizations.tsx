@@ -19,6 +19,7 @@ import {
   ResponsiveContainer
 } from "recharts";
 import { motion } from "framer-motion";
+import { LineChart, PieChart as PieChartIcon } from "lucide-react";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#a855f7"];
 
@@ -86,6 +87,7 @@ export function Visualizations() {
                 />
                 <Tooltip
                   formatter={(value: any) => formatCurrency(Number(value))}
+                  contentStyle={{ borderRadius: "8px", border: "1px solid hsl(var(--border))", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)", backgroundColor: "hsl(var(--background))", color: "hsl(var(--foreground))" }}
                 />
                 <Area
                   type="monotone"
@@ -97,8 +99,11 @@ export function Visualizations() {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-              No data available
+            <div className="flex flex-col items-center justify-center h-full text-muted-foreground space-y-2">
+              <div className="p-3 rounded-full bg-muted/50">
+                <LineChart className="h-6 w-6 text-muted-foreground/50" />
+              </div>
+              <p className="text-sm">No trend data available.</p>
             </div>
           )}
         </CardContent>
@@ -130,12 +135,16 @@ export function Visualizations() {
                 </Pie>
                 <Tooltip
                   formatter={(value: any) => formatCurrency(Number(value))}
+                  contentStyle={{ borderRadius: "8px", border: "1px solid hsl(var(--border))", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)", backgroundColor: "hsl(var(--background))", color: "hsl(var(--foreground))" }}
                 />
               </PieChart>
              </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-full w-full text-muted-foreground text-sm">
-              No expenses to break down
+            <div className="flex flex-col items-center justify-center h-full w-full text-muted-foreground space-y-2">
+              <div className="p-3 rounded-full bg-muted/50">
+                <PieChartIcon className="h-6 w-6 text-muted-foreground/50" />
+              </div>
+              <p className="text-sm">No expenses to break down.</p>
             </div>
           )}
         </CardContent>
