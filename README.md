@@ -54,13 +54,13 @@ ext-themes.
 
 First, install the required dependencies:
 
-`ash
+`bash
 npm install
 `
 
 Then, run the development server:
 
-`ash
+`bash
 npm run dev
 `
 
