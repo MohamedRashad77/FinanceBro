@@ -1,46 +1,67 @@
 # Finance Dashboard
 
-A clean, interactive finance dashboard interface built as a frontend development assignment evaluation.
+A clean, interactive finance dashboard interface built as a frontend development assignment evaluation. 
+This project has been implemented showcasing how to build a production-level React application in Next.js from zero to full state consistency.
 
-## Features
+## Overview & Approach
+The application aims to deliver an intuitive and clean user interface for managing personal finances. Leveraging Next.js App Router and Zustand for state management. Below is an overview addressing key evaluation criteria:
 
-*   **Dashboard Overview:** View total balance, income, and expenses with time-based (Area chart) and categorical (Pie chart) visualizations.
-*   **Insights Section:** Dynamically tracks and displays metrics like highest spending category, and savings rate based on latest data.
-*   **Transactions Section:** Browse transactions with date, category, type (income/expense), and amount.
-*   **Advanced Features:** Column sorting (Data, Category, Amount), quick category filters, and CSV export functionality.
-*   **Role-Based UI:**
-    *   **Viewer:** Can only see data and visualizations.
-    *   **Admin:** Has the ability to add and edit transactions.
-    *(Role can be toggled in the header menu).*
-*   **Persistent State Management:** State is gracefully handled using Zustand and `localStorage` persistence.
-*   **Dark/Light Mode:** Full integration with next-themes for optimal viewing.
+### 1. Design & Creativity
+- Designed with user comfort in mind using Shadcn UI mixed with TailwindCSS for beautiful and clean components.
+- Integrated interactive Recharts for area charts and pie charts, helping visualize income paths and distribution without overwhelming the user.
+- Emphasized whitespace, clear typography, and subtle animations using ramer-motion for a pleasant feel.
+
+### 2. Responsiveness
+- Entire layout relies on Tailwind’s mobile-first responsive utility classes.
+- Used CSS grids and Flexbox rigorously to adapt the top-level cards, visualizations, and table columns gracefully across screens (e.g., stacking side-by-side elements on smaller viewport widths).
+
+### 3. Functionality & RBAC
+- Built a functional dynamic dashboard where changes in transaction data recalculate summaries in real-time.
+- **Role-Based Access Control (RBAC)** implemented via the top-right header RoleSwitcher:
+  - **Viewer:** Read-only access to view charts, insights, and transactions.
+  - **Admin:** Has Write-access to add, edit, and delete transactions. Forms and Actions column dynamically adapt based on this active role.
+- Included full local sorting and filtering of transactions.
+
+### 4. User Experience
+- Includes dark mode and light mode support integrated with 
+ext-themes.
+- Features smooth loading states, localized currency toggles, skeleton-like transitions, and feedback/empty states when filters hide all table rows.
+
+### 5. Technical Quality
+- Separated concerns into modular files: Layouts, Dashboard, Transactions, Store, and Hooks.
+- Custom Hooks (useCurrencyFormatter) extract repeated logic.
+- Built-in CSV export logic.
+- Fixed common SSR Recharts warnings locally.
+
+### 6. State Management Approach
+- State managed through **Zustand**. Kept lightweight, avoiding prop-drilling, yet persisted beautifully with persist middleware to localStorage.
+- Includes a mock asynchronous etchData step mimicking real API behavior.
+
+### 7. Attention to Detail
+- Handled edge-cases: limiting latest transactions on the dashboard via limit props, hiding specific UI controls when nested. 
+- Graceful empty states with icons when clearing out all transactions or filtering out matches.
 
 ## Technical Stack
 
-*   **Framework:** React / Next.js
+*   **Framework:** React / Next.js (App Router)
 *   **Styling:** Tailwind CSS + shadcn/ui components
-*   **State Management:** Zustand (with persist middleware)
+*   **State Management:** Zustand (Persisted)
 *   **Charts:** Recharts
+*   **Animation:** Framer Motion
 *   **Icons:** Lucide-React
 
 ## How to Run Locally
 
 First, install the required dependencies:
 
-```bash
+`ash
 npm install
-```
+`
 
 Then, run the development server:
 
-```bash
+`ash
 npm run dev
-```
+`
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Approach & Decisions
-
-*   **Zustand for State:** Chosen for its minimalistic and un-opinionated state management style which fits this scenario perfectly, preventing prop drilling.
-*   **Modular Architecture:** Components are divided neatly into `dashboard`, `transactions`, and `layout` features promoting high re-usability and better DX.
-*   **Responsive UX:** Shadcn elements were heavily customized for both desktop and mobile resolutions to avoid clipping data or squishing graphs.
