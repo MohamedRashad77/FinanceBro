@@ -61,7 +61,7 @@ export function DetailedInsightsCharts() {
           </CardHeader>
           <CardContent className="flex-1">
             {cashFlowData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                 <ComposedChart data={cashFlowData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="date" tick={{ fontSize: 12 }} />
@@ -92,7 +92,7 @@ export function DetailedInsightsCharts() {
           </CardHeader>
           <CardContent className="flex-1">
             {categoryData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                 <BarChart data={categoryData} layout="vertical" margin={{ top: 0, right: 30, left: 40, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                   <XAxis type="number" tickFormatter={(val) => formatCurrency(val).replace(/\.00$/, "")} tick={{ fontSize: 12 }} />
@@ -116,3 +116,4 @@ export function DetailedInsightsCharts() {
     </div>
   );
 }
+

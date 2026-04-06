@@ -28,7 +28,7 @@ export default function Home() {
            className="flex flex-col sm:flex-row sm:items-end justify-between gap-4"
         >
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">Finance Dashboard</h1>
+            <h1 className="text-4xl font-bold tracking-tight">FinanceBro</h1>
             <p className="text-muted-foreground mt-2">
               Track your income, expenses, and financial insights
             </p>

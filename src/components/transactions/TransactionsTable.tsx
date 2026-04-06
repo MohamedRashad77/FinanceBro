@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { format } from "date-fns";
 import { useFinanceStore, Transaction } from "@/store/useFinanceStore";
 import {
@@ -35,6 +35,9 @@ export function TransactionsTable({
   const [sortField, setSortField] = useState<SortField>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const { format: formatCurrency, rawFormat } = useCurrencyFormatter();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const sortedAndFiltered = useMemo(() => {
     let result = transactions.filter((t) =>
@@ -98,7 +101,7 @@ export function TransactionsTable({
               <Download className="mr-2 h-4 w-4" />
               Export CSV
             </Button>
-            {role === "Admin" && <TransactionFormDialog />}
+            {mounted && role === "Admin" && <TransactionFormDialog />}
           </div>
         )}
       </CardHeader>
@@ -143,7 +146,7 @@ export function TransactionsTable({
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
-                {role === "Admin" && (
+                {mounted && role === "Admin" && (
                   <TableHead className="text-right">Actions</TableHead>
                 )}
               </TableRow>
@@ -189,7 +192,7 @@ export function TransactionsTable({
                       <TableCell className="text-right p-4 font-bold">
                         {formatCurrency(transaction.amount)}
                       </TableCell>
-                      {role === "Admin" && (
+                      {mounted && role === "Admin" && (
                         <TableCell className="text-right p-4">
                           <TransactionFormDialog
                             transaction={transaction}

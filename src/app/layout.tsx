@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Finance Dashboard UI",
-  description: "A clean and interactive finance dashboard interface.",
+  title: "FinanceBro",
+  description: "A clean and interactive FinanceBro interface.",
 };
 
 export default function RootLayout({

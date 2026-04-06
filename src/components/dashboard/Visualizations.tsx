@@ -72,7 +72,7 @@ export function Visualizations() {
         </CardHeader>
         <CardContent className="flex-1 min-h-[300px] w-full">
           {trendData.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <AreaChart
                 data={trendData}
                 margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
@@ -115,7 +115,7 @@ export function Visualizations() {
         </CardHeader>
         <CardContent className="flex-1 min-h-[300px] flex items-center justify-center">
           {breakdownData.length > 0 ? (
-             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+             <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <PieChart>
                 <Pie
                   data={breakdownData}
@@ -152,3 +152,4 @@ export function Visualizations() {
     </motion.div>
   );
 }
+
